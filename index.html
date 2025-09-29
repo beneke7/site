@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro Future - Personal Website</title>
+    
+    <!-- Google Fonts - Press Start 2P -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
+    <!-- NES.css CDN -->
+    <link href="https://unpkg.com/nes.css@latest/css/nes.min.css" rel="stylesheet">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Interactive Space Battle Background -->
+    <div class="space-background">
+        <canvas id="spaceCanvas"></canvas>
+        <div class="stars"></div>
+        <div class="planets">
+            <div class="planet planet-1"></div>
+            <div class="planet planet-2"></div>
+            <div class="planet planet-3"></div>
+        </div>
+        <div class="galaxies">
+            <div class="galaxy galaxy-1"></div>
+            <div class="galaxy galaxy-2"></div>
+        </div>
+    </div>
+
+    <!-- Game UI -->
+    <div class="game-ui" id="gameUI">
+        <div>Fleet Status: <span id="gameScore">Blue: 17 | Red: 17</span></div>
+        <div>Selected: <span id="gameWave">fighter</span></div>
+        <div>Status: <span id="gameHull">ACTIVE</span></div>
+    </div>
+
+    <div class="game-controls">
+        <div>W/S: Cycle Ships</div>
+        <div>Space: Fire Missile</div>
+        <div>Auto AI Combat Active</div>
+    </div>
+    
+    <div class="main-container">
+        <!-- Header Section -->
+        <header class="section">
+            <div class="nes-container with-title is-centered">
+                <p class="title">RETRO FUTURE</p>
+                <h1>Welcome to the Digital Frontier</h1>
+                <p>A personal space in cyberspace</p>
+            </div>
+        </header>
+
+        <!-- About Section -->
+        <section class="section">
+            <div class="nes-container with-title">
+                <p class="title">About</p>
+                <div class="content about-content">
+                    <div class="profile-section">
+                        <div class="profile-image-container">
+                            <img src="letöltés.png" alt="Profile" class="profile-image">
+                        </div>
+                        <div class="profile-text">
+                            <p>Greetings, space cowboy. This is my corner of the digital universe, 
+                            inspired by the neon-soaked aesthetics of 90s anime and the endless 
+                            possibilities of tomorrow.</p>
+                            <br>
+                            <p>Like the crew of the Bebop drifting through space, we're all just 
+                            navigating this vast digital frontier, one pixel at a time.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section class="section">
+            <div class="nes-container with-title">
+                <p class="title">Projects</p>
+                <div class="content">
+                    <div class="nes-container is-dark project-item">
+                        <h3>Fleet Battle</h3>
+                        <p>Interactive space combat with pixelart spaceships</p>
+                        <a href="fleet-battle.html" class="nes-btn is-primary" style="margin-top: 10px;">PLAY NOW</a>
+                    </div>
+                    <div class="nes-container is-dark project-item">
+                        <h3>Project NERV</h3>
+                        <p>A synchronization system for digital consciousness</p>
+                    </div>
+                    <div class="nes-container is-dark project-item">
+                        <h3>Bebop Navigator</h3>
+                        <p>Bounty hunting in the data streams</p>
+                    </div>
+                    <div class="nes-container is-dark project-item">
+                        <h3>Ghost in the Shell</h3>
+                        <p>Exploring the boundaries between human and machine</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="section">
+            <div class="nes-container with-title">
+                <p class="title">Contact</p>
+                <div class="content">
+                    <p>Ready to jack into the matrix? Let's connect across the digital divide.</p>
+                    <br>
+                    <div class="contact-buttons">
+                        <button type="button" class="nes-btn is-primary">Email</button>
+                        <button type="button" class="nes-btn is-success">GitHub</button>
+                        <button type="button" class="nes-btn is-warning">LinkedIn</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="section">
+            <div class="nes-container is-dark">
+                <p class="footer-text">See you space cowboy... © 2024</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,464 @@
+/* ===== GLOBAL STYLES ===== */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Press Start 2P', cursive !important;
+    background-color: #0d0d1a;
+    color: #e0e0e0;
+    margin: 0;
+    padding: 20px;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* ===== SPACE BACKGROUND ANIMATIONS ===== */
+.space-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+}
+
+#spaceCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: auto;
+    cursor: crosshair;
+}
+
+.game-ui {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    color: #7df9ff;
+    text-shadow: 0 0 10px #7df9ff;
+    pointer-events: none;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.game-controls {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 10;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 8px;
+    color: #ffff00;
+    text-shadow: 0 0 5px #ffff00;
+    pointer-events: none;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    border-radius: 5px;
+}
+
+/* Animated Stars - Enhanced for retro pixelart feel */
+.stars {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(1px 1px at 20px 30px, #00ffff, transparent),
+        radial-gradient(1px 1px at 40px 70px, #ffff00, transparent),
+        radial-gradient(1px 1px at 90px 40px, #ff00ff, transparent),
+        radial-gradient(1px 1px at 130px 80px, #00ff00, transparent),
+        radial-gradient(1px 1px at 160px 30px, #ff6600, transparent),
+        radial-gradient(2px 2px at 180px 60px, #ffffff, transparent);
+    background-repeat: repeat;
+    background-size: 300px 200px;
+    animation: starMove 20s linear infinite, twinkle 3s ease-in-out infinite alternate;
+}
+
+/* Planets */
+.planets {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.planet {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.7;
+}
+
+.planet-1 {
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle at 30% 30%, #ff6b9d, #8b5a8c);
+    top: 20%;
+    right: 10%;
+    animation: orbit 30s linear infinite, drift 40s ease-in-out infinite;
+}
+
+.planet-2 {
+    width: 60px;
+    height: 60px;
+    background: radial-gradient(circle at 30% 30%, #7df9ff, #4a90e2);
+    bottom: 30%;
+    left: 15%;
+    animation: orbit 35s linear infinite reverse, drift 50s ease-in-out infinite reverse;
+}
+
+.planet-3 {
+    width: 40px;
+    height: 40px;
+    background: radial-gradient(circle at 30% 30%, #50fa7b, #2d8f3f);
+    top: 60%;
+    right: 30%;
+    animation: orbit 25s linear infinite, drift 45s ease-in-out infinite;
+}
+
+/* Galaxies */
+.galaxies {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.galaxy {
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    opacity: 0.3;
+}
+
+.galaxy-1 {
+    background: radial-gradient(ellipse at center, rgba(255, 107, 157, 0.4) 0%, transparent 70%);
+    top: 10%;
+    left: 20%;
+    animation: rotate 30s linear infinite, pulse 8s ease-in-out infinite;
+}
+
+.galaxy-2 {
+    background: radial-gradient(ellipse at center, rgba(125, 249, 255, 0.4) 0%, transparent 70%);
+    bottom: 20%;
+    right: 25%;
+    animation: rotate 25s linear infinite reverse, pulse 6s ease-in-out infinite;
+}
+
+/* Canvas spaceships will replace the old emoji spaceships */
+
+/* ===== LAYOUT ===== */
+.main-container {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+    z-index: 1;
+}
+
+.section {
+    margin-bottom: 40px;
+    width: 100%;
+}
+
+/* ===== NES.CSS THEME OVERRIDES ===== */
+.nes-container {
+    background-color: rgba(13, 13, 26, 0.9) !important;
+    border-color: #e0e0e0 !important;
+    color: #e0e0e0 !important;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.nes-container.is-dark {
+    background-color: rgba(0, 0, 0, 0.7) !important;
+    border-color: #7777ff !important;
+}
+
+.nes-container.with-title > .title {
+    background-color: #0d0d1a !important;
+    color: #ff6b9d !important;
+    text-shadow: 0 0 10px #ff6b9d;
+    animation: glow 3s ease-in-out infinite;
+}
+
+/* ===== HEADER STYLES ===== */
+header h1 {
+    font-size: 16px;
+    margin: 20px 0;
+    text-align: center;
+    color: #7df9ff;
+    text-shadow: 0 0 20px #7df9ff;
+}
+
+header p {
+    text-align: center;
+    font-size: 10px;
+    color: #e0e0e0;
+    margin: 10px 0;
+}
+
+/* ===== PROFILE SECTION ===== */
+.profile-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.profile-image-container {
+    flex-shrink: 0;
+}
+
+.profile-image {
+    width: 80px;
+    height: 80px;
+    border: 2px solid #ff6b9d;
+    border-radius: 8px;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+    box-shadow: 0 0 20px rgba(255, 107, 157, 0.5);
+    transition: transform 0.3s ease;
+}
+
+.profile-image:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 30px rgba(255, 107, 157, 0.8);
+}
+
+.profile-text {
+    flex: 1;
+    min-width: 300px;
+}
+
+/* Content Styles */
+.content {
+    padding: 20px;
+}
+
+.content p {
+    font-size: 10px;
+    margin-bottom: 15px;
+}
+
+.content h3 {
+    font-size: 12px;
+    color: #ff6b9d;
+    margin-bottom: 10px;
+    text-shadow: 0 0 5px #ff6b9d;
+}
+
+/* Project Items */
+.project-item {
+    margin-bottom: 20px !important;
+    padding: 15px !important;
+    transition: all 0.3s ease;
+}
+
+.project-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(125, 249, 255, 0.3);
+}
+
+.project-item h3 {
+    margin-top: 0;
+}
+
+.project-item p {
+    font-size: 9px;
+    color: #b0b0b0;
+}
+
+/* Button Styles */
+.nes-btn {
+    font-family: 'Press Start 2P', cursive !important;
+    font-size: 8px !important;
+    margin: 5px !important;
+    transition: all 0.3s ease;
+}
+
+.nes-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+}
+
+.nes-btn.is-primary {
+    background-color: #7df9ff !important;
+    border-color: #7df9ff !important;
+    color: #0d0d1a !important;
+}
+
+.nes-btn.is-success {
+    background-color: #50fa7b !important;
+    border-color: #50fa7b !important;
+    color: #0d0d1a !important;
+}
+
+.nes-btn.is-warning {
+    background-color: #ffb86c !important;
+    border-color: #ffb86c !important;
+    color: #0d0d1a !important;
+}
+
+/* Contact Buttons */
+.contact-buttons {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Footer */
+footer {
+    margin-top: 60px;
+}
+
+.footer-text {
+    text-align: center;
+    font-size: 8px;
+    color: #7777ff;
+    margin: 0;
+    padding: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .main-container {
+        padding: 0 10px;
+    }
+    
+    body {
+        padding: 10px;
+    }
+    
+    .section {
+        margin-bottom: 30px;
+    }
+    
+    header h1 {
+        font-size: 14px;
+    }
+    
+    .content p {
+        font-size: 9px;
+    }
+    
+    .nes-btn {
+        font-size: 7px !important;
+        display: block;
+        margin: 10px auto !important;
+        width: 120px;
+    }
+}
+
+
+/* ===== ANIMATIONS ===== */
+@keyframes twinkle {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+@keyframes starMove {
+    0% { transform: translateX(0) translateY(0); }
+    100% { transform: translateX(-300px) translateY(-200px); }
+}
+
+@keyframes drift {
+    0%, 100% { transform: translateX(0) translateY(0); }
+    25% { transform: translateX(20px) translateY(-15px); }
+    50% { transform: translateX(-10px) translateY(-25px); }
+    75% { transform: translateX(-20px) translateY(10px); }
+}
+
+@keyframes orbit {
+    0% { transform: rotate(0deg) translateX(50px) rotate(0deg); }
+    100% { transform: rotate(360deg) translateX(50px) rotate(-360deg); }
+}
+
+@keyframes rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.3; }
+    50% { transform: scale(1.1); opacity: 0.5; }
+}
+
+@keyframes flyAcross {
+    0% { 
+        left: -50px; 
+        transform: rotate(0deg); 
+    }
+    50% { 
+        transform: rotate(10deg); 
+    }
+    100% { 
+        left: calc(100% + 50px); 
+        transform: rotate(0deg); 
+    }
+}
+
+@keyframes glow {
+    0%, 100% { text-shadow: 0 0 5px currentColor; }
+    50% { text-shadow: 0 0 20px currentColor, 0 0 30px currentColor; }
+}
+
+@keyframes glitch {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-2px); }
+    40% { transform: translateX(2px); }
+    60% { transform: translateX(-1px); }
+    80% { transform: translateX(1px); }
+}
+
+@keyframes fadeInOut {
+    0%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+    50% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes float {
+    0% { transform: translateY(0px) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.6; }
+    100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+@keyframes rainbow {
+    0% { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(360deg); }
+}
+
+.cursor {
+    animation: blink 1s infinite;
+}
+
+/* ===== SCROLLBAR STYLING ===== */
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: #0d0d1a;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #7777ff;
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #ff6b9d;
+}
