@@ -126,24 +126,17 @@ class RetroFutureWebsite {
     }
 
     enhanceSpaceAnimations() {
+        // Add rotating galaxy GIF to background
+        this.addRotatingGalaxy();
+        
+        // Add all the new animated space objects
+        this.addAnimatedSpaceObjects();
+        
         // Add random delays to spaceships for more natural movement
         const spaceships = document.querySelectorAll('.spaceship');
         spaceships.forEach((ship, index) => {
             const randomDelay = Math.random() * 5;
             ship.style.animationDelay = `-${randomDelay}s`;
-        });
-
-        // Add interactive hover effects to planets
-        const planets = document.querySelectorAll('.planet');
-        planets.forEach(planet => {
-            planet.addEventListener('mouseenter', () => {
-                planet.style.transform = 'scale(1.2)';
-                planet.style.transition = 'transform 0.3s ease';
-            });
-            
-            planet.addEventListener('mouseleave', () => {
-                planet.style.transform = 'scale(1)';
-            });
         });
 
         // Add click effects to galaxies
@@ -155,6 +148,134 @@ class RetroFutureWebsite {
                     galaxy.style.animation = '';
                 }, 2000);
             });
+        });
+    }
+
+    addRotatingGalaxy() {
+        // Create galaxy element using the GIF
+        const galaxy = document.createElement('div');
+        galaxy.className = 'rotating-galaxy';
+        galaxy.style.position = 'fixed';
+        galaxy.style.top = '20%';
+        galaxy.style.right = '15%';
+        galaxy.style.width = '300px';
+        galaxy.style.height = '300px';
+        galaxy.style.backgroundImage = 'url(2713614202.gif)';
+        galaxy.style.backgroundSize = 'contain';
+        galaxy.style.backgroundRepeat = 'no-repeat';
+        galaxy.style.backgroundPosition = 'center';
+        galaxy.style.opacity = '0.7';
+        galaxy.style.pointerEvents = 'none';
+        galaxy.style.zIndex = '0'; // Behind the space canvas
+        
+        // Add to space background
+        const spaceBackground = document.querySelector('.space-background');
+        if (spaceBackground) {
+            spaceBackground.appendChild(galaxy);
+        }
+    }
+
+    addAnimatedSpaceObjects() {
+        const spaceBackground = document.querySelector('.space-background');
+        if (!spaceBackground) return;
+
+        // Define space objects with their properties
+        const spaceObjects = [
+            {
+                name: 'earth',
+                src: 'earth.gif',
+                size: '120px',
+                top: '15%',
+                left: '10%',
+                opacity: '0.8'
+            },
+            {
+                name: 'exoplanet',
+                src: 'exoplanet.gif',
+                size: '100px',
+                top: '60%',
+                left: '5%',
+                opacity: '0.7'
+            },
+            {
+                name: 'black-hole',
+                src: 'black_hole.gif',
+                size: '150px',
+                top: '40%',
+                right: '8%',
+                opacity: '0.6'
+            },
+            {
+                name: 'gas-giant-1',
+                src: 'gasgiant1.gif',
+                size: '140px',
+                top: '70%',
+                right: '25%',
+                opacity: '0.75'
+            },
+            {
+                name: 'gas-giant-2',
+                src: 'gasgiant2.gif',
+                size: '110px',
+                top: '25%',
+                left: '25%',
+                opacity: '0.7'
+            },
+            {
+                name: 'asteroids',
+                src: 'asteroids.png',
+                size: '80px',
+                top: '80%',
+                left: '30%',
+                opacity: '0.6'
+            }
+        ];
+
+        // Create each space object
+        spaceObjects.forEach(obj => {
+            const element = document.createElement('div');
+            element.className = `space-object ${obj.name}`;
+            element.style.position = 'fixed';
+            element.style.width = obj.size;
+            element.style.height = obj.size;
+            element.style.backgroundImage = `url(${obj.src})`;
+            element.style.backgroundSize = 'contain';
+            element.style.backgroundRepeat = 'no-repeat';
+            element.style.backgroundPosition = 'center';
+            element.style.opacity = obj.opacity;
+            element.style.pointerEvents = 'none';
+            element.style.zIndex = '0'; // Behind the space canvas
+            
+            // Set position
+            if (obj.top) element.style.top = obj.top;
+            if (obj.bottom) element.style.bottom = obj.bottom;
+            if (obj.left) element.style.left = obj.left;
+            if (obj.right) element.style.right = obj.right;
+            
+            // Add hover effects for interactivity
+            element.style.pointerEvents = 'auto';
+            element.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+            element.style.cursor = 'pointer';
+            
+            element.addEventListener('mouseenter', () => {
+                element.style.transform = 'scale(1.1)';
+                element.style.opacity = '1';
+            });
+            
+            element.addEventListener('mouseleave', () => {
+                element.style.transform = 'scale(1)';
+                element.style.opacity = obj.opacity;
+            });
+            
+            // Add click effect
+            element.addEventListener('click', () => {
+                element.style.transform = 'scale(1.2)';
+                setTimeout(() => {
+                    element.style.transform = 'scale(1)';
+                }, 200);
+            });
+            
+            spaceBackground.appendChild(element);
         });
     }
 
