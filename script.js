@@ -28,11 +28,37 @@ class RetroFutureWebsite {
         this.init();
     }
 
+    addCenterExoplanet() {
+        const spaceBackground = document.querySelector('.space-background');
+        if (!spaceBackground) return;
+        // Avoid duplicates
+        if (spaceBackground.querySelector('.exoplanet-center')) return;
+
+        const element = document.createElement('div');
+        element.className = 'space-object exoplanet-center';
+        element.style.position = 'fixed';
+        element.style.width = '140px';
+        element.style.height = '140px';
+        element.style.left = '50%';
+        element.style.top = '50%';
+        element.style.transform = 'translate(-50%, -50%)';
+        element.style.backgroundImage = 'url(exoplanet.gif)';
+        element.style.backgroundSize = 'contain';
+        element.style.backgroundRepeat = 'no-repeat';
+        element.style.backgroundPosition = 'center';
+        element.style.opacity = '0.8';
+        element.style.pointerEvents = 'none';
+        element.style.zIndex = '2';
+
+        spaceBackground.appendChild(element);
+    }
+
     init() {
         this.setupEventListeners();
         this.setupTypingEffect();
         this.enhanceSpaceAnimations();
         this.initSpaceBattle();
+        this.installPageShowReset();
         console.log('🚀 Welcome to the digital frontier, space cowboy...');
     }
 
@@ -64,6 +90,16 @@ class RetroFutureWebsite {
 
         // Smooth scrolling for better UX
         this.setupSmoothScrolling();
+
+        // Blog button navigation with cinematic zoom
+        const blogBtn = document.getElementById('blogButton');
+        if (blogBtn) {
+            blogBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                blogBtn.disabled = true;
+                this.navigateToBlogWithZoom();
+            });
+        }
     }
 
     handleContactClick(button) {
@@ -131,6 +167,8 @@ class RetroFutureWebsite {
         
         // Add all the new animated space objects
         this.addAnimatedSpaceObjects();
+        // Add permanent centered exoplanet target
+        this.addCenterExoplanet();
         
         // Add random delays to spaceships for more natural movement
         const spaceships = document.querySelectorAll('.spaceship');
@@ -267,14 +305,6 @@ class RetroFutureWebsite {
                 element.style.opacity = obj.opacity;
             });
             
-            // Add click effect
-            element.addEventListener('click', () => {
-                element.style.transform = 'scale(1.2)';
-                setTimeout(() => {
-                    element.style.transform = 'scale(1)';
-                }, 200);
-            });
-            
             spaceBackground.appendChild(element);
         });
     }
@@ -306,6 +336,126 @@ class RetroFutureWebsite {
     setupSmoothScrolling() {
         // Add smooth scrolling behavior
         document.documentElement.style.scrollBehavior = 'smooth';
+    }
+
+    navigateToBlogWithZoom() {
+        // Fade out UI, then slow zoom to center planet, then navigate
+        const uiSelectors = ['.main-container', '#gameUI', '.game-controls'];
+        const fadeDuration = 900;
+        uiSelectors.forEach(sel => {
+            const el = document.querySelector(sel);
+            if (el) {
+                el.style.transition = `opacity ${fadeDuration}ms ease`;
+                el.style.opacity = '0';
+            }
+        });
+
+        setTimeout(() => {
+            this.startCenterZoom(() => {
+                window.location.href = 'blog/index.html';
+            });
+        }, fadeDuration);
+    }
+
+    startHyperspace(onComplete, duration = 900) {
+        // Inject hyperspace CSS if needed
+        if (!document.getElementById('hyperspace-style')) {
+            const hsStyle = document.createElement('style');
+            hsStyle.id = 'hyperspace-style';
+            hsStyle.textContent = `
+                .hyperspace-overlay { position: fixed; inset: 0; z-index: 10000; pointer-events: none; overflow: hidden; }
+                .hyperspace-flash { position:absolute; inset:0; background:#fff; opacity:0; animation: hs-flash ${duration}ms ease forwards; }
+                .hyperspace-streaks { position:absolute; inset:-50% 0 -50% 0; background: repeating-linear-gradient(90deg, rgba(255,255,255,0.0) 0px, rgba(255,255,255,0.0) 6px, rgba(255,255,255,0.9) 7px, rgba(255,255,255,0.0) 10px); filter: blur(1px) brightness(1.2); transform: perspective(600px) rotateX(10deg) translateZ(0); opacity:0.85; animation: hs-warp ${duration}ms cubic-bezier(0.16,1,0.3,1) forwards; }
+                .hyperspace-vignette { position:absolute; inset:0; background: radial-gradient(ellipse at center, rgba(0,0,0,0) 40%, rgba(0,0,0,0.6) 100%); opacity:0; animation: hs-vig ${duration}ms ease forwards; }
+                @keyframes hs-flash { 0%{opacity:0;} 10%{opacity:1;} 30%{opacity:0.2;} 100%{opacity:0.9;} }
+                @keyframes hs-warp { 0%{opacity:0; transform: translateZ(0) skewX(0deg);} 10%{opacity:0.9;} 100%{opacity:1; transform: translateX(-2000px) skewX(-25deg);} }
+                @keyframes hs-vig { 0%{opacity:0;} 100%{opacity:1;} }
+            `;
+            document.head.appendChild(hsStyle);
+        }
+
+        const overlay = document.createElement('div');
+        overlay.className = 'hyperspace-overlay';
+        const flash = document.createElement('div');
+        flash.className = 'hyperspace-flash';
+        const streaks = document.createElement('div');
+        streaks.className = 'hyperspace-streaks';
+        const vig = document.createElement('div');
+        vig.className = 'hyperspace-vignette';
+        overlay.appendChild(streaks);
+        overlay.appendChild(vig);
+        overlay.appendChild(flash);
+        document.body.appendChild(overlay);
+
+        // Cleanup after duration in case of SPA-like return
+        setTimeout(() => {
+            if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+            onComplete && onComplete();
+        }, duration);
+    }
+
+    startCenterZoom(onComplete, duration = 1600) {
+        const spaceBg = document.querySelector('.space-background');
+        // Subtle dark overlay during zoom
+        const overlay = document.createElement('div');
+        overlay.style.position = 'fixed';
+        overlay.style.inset = '0';
+        overlay.style.background = 'rgba(0,0,0,0)';
+        overlay.style.transition = `background ${duration}ms ease`;
+        overlay.style.zIndex = '9998';
+        overlay.style.pointerEvents = 'none';
+        document.body.appendChild(overlay);
+
+        if (!spaceBg) {
+            // Fallback to simple fade
+            void overlay.offsetHeight;
+            overlay.style.background = 'rgba(0,0,0,1)';
+            setTimeout(() => onComplete && onComplete(), duration);
+            return;
+        }
+
+        // Raise background above content so zoom is visible
+        spaceBg.dataset.prevZ = spaceBg.style.zIndex || '';
+        spaceBg.style.zIndex = '5';
+        spaceBg.style.willChange = 'transform';
+        spaceBg.style.transformOrigin = '50% 50%';
+        spaceBg.style.transition = `transform ${duration}ms cubic-bezier(0.16, 1, 0.3, 1)`;
+
+        // Trigger transitions
+        void spaceBg.offsetHeight;
+        overlay.style.background = 'rgba(0,0,0,0.5)';
+        spaceBg.style.transform = 'scale(8)';
+
+        setTimeout(() => {
+            onComplete && onComplete();
+        }, duration + 40);
+    }
+
+    installPageShowReset() {
+        const reset = () => {
+            const spaceBg = document.querySelector('.space-background');
+            if (spaceBg) {
+                spaceBg.style.transform = '';
+                spaceBg.style.transition = '';
+                spaceBg.style.willChange = '';
+                // restore z-index if it was elevated
+                if (spaceBg.dataset && 'prevZ' in spaceBg.dataset) {
+                    spaceBg.style.zIndex = spaceBg.dataset.prevZ;
+                    delete spaceBg.dataset.prevZ;
+                } else {
+                    // default from CSS
+                    spaceBg.style.zIndex = '-1';
+                }
+            }
+            ['.main-container', '#gameUI', '.game-controls'].forEach(sel => {
+                const el = document.querySelector(sel);
+                if (el) {
+                    el.style.opacity = '';
+                    el.style.transition = '';
+                }
+            });
+        };
+        window.addEventListener('pageshow', reset);
     }
 
     async initSpaceBattle() {

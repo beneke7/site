@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0KOVEMVIARBEGEOOfUG6UQApGNVsitVFpJdDuu4mnO1iFvJ4dXTir" crossorigin="anonymous">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro Blog</title>
+    
+    <!-- NES.css -->
+    <link href="https://unpkg.com/nes.css@latest/css/nes.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
+    
+    <!-- KaTeX for LaTeX rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Press Start 2P', cursive;
+            position: relative;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        #ocean-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .nav {
+            background-color: white;
+            padding: 15px 20px;
+            margin-bottom: 50px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+
+
+        .nav a {
+            color: #000;
+            text-decoration: none;
+            font-size: 10px;
+        }
+
+        .nav a:hover {
+            color: #666;
+        }
+
+        .header {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 10px;
+            color: #666;
+        }
+
+        .post {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 50px;
+        }
+
+        /* Helpers for images centered with NES frame */
+        .center {
+            text-align: center;
+        }
+        .image-frame.nes-container {
+            display: inline-block;
+        }
+        .image-frame img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .post-title {
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .post-meta {
+            font-size: 8px;
+            color: #888;
+            margin-bottom: 15px;
+        }
+
+        .post-content {
+            font-size: 10px;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .post-content p {
+            margin-bottom: 15px;
+        }
+
+        .formula-block {
+            background-color: #f5f5f5;
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid #000;
+            overflow-x: auto;
+        }
+
+        /* Scale LaTeX formulas */
+        .formula-block .katex {
+            font-size: 2em;
+        }
+
+        .formula-block .katex-display {
+            font-size: 1em;
+        }
+
+        .formula-block p {
+            margin-bottom: 5px !important; /* Reduce space between text and formulas */
+        }
+
+        .time-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .time-controls .nes-badge {
+            /* cursor handled by NES.css for anchors to show retro pointer */
+            user-select: none;
+        }
+
+        .time-controls .nes-badge:hover {
+            opacity: 0.8;
+        }
+
+        /* Removed explicit cursor to allow NES.css retro cursor */
+        /* (no extra rules needed) */
+
+        .article-nav {
+            background-color: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 30px;
+            border: 2px solid #000;
+        }
+
+        .article-nav h3 {
+            font-size: 10px;
+            margin-bottom: 10px;
+        }
+
+        .article-nav ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .article-nav li {
+            margin-bottom: 8px;
+        }
+
+        .article-nav a {
+            color: #000;
+            text-decoration: none;
+            font-size: 9px;
+        }
+
+        .article-nav a:hover {
+            color: #666;
+        }
+
+        .footer {
+            background-color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 8px;
+            color: #666;
+            margin-top: 50px;
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 16px;
+            }
+            
+            .post-title {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button id="homeButton" class="nes-btn is-warning" style="position: fixed; top: 16px; right: 16px; z-index: 10000;">HOME</button>
+    <canvas id="ocean-background"></canvas>
+    <div class="container">
+        <!-- Navigation -->
+        <div class="nav nes-container is-rounded">
+            <a href="#" data-section="home">Home</a>
+            <a href="#" data-section="physics">Physics</a>
+            <a href="#" data-section="building">Building</a>
+            <a href="#" data-section="philosophy">Philosophy</a>
+            <a href="#" data-section="music">Music</a>
+            <a href="#" data-section="about">About</a>
+        </div>
+
+
+        <!-- Home Section -->
+        <div class="content-section active" id="home">
+            <div class="header nes-container is-rounded with-title">
+                <p class="title">Blog</p>
+                <h1>Retro Ocean Blog</h1>
+                <p>A minimalist retro-style blog with dynamic day/night cycle</p>
+                <!-- Moved time controls into the blog header container -->
+                <div class="time-controls">
+                    <a href="#" class="nes-badge" id="demo-badge">
+                        <span class="is-dark">Demo: OFF</span>
+                    </a>
+                    <a href="#" class="nes-badge" id="sunset-badge">
+                        <span class="is-warning">Sunset Mode</span>
+                    </a>
+                    <a href="#" class="nes-badge" id="reset-badge">
+                        <span class="is-primary">Real Time</span>
+                    </a>
+                    <a href="#" class="nes-badge" id="time-badge">
+                        <span class="is-success" id="time-display">--:--</span>
+                    </a>
+                </div>
+            </div>
+
+            <div id="featured-post" class="post nes-container is-rounded with-title">
+                <p class="title">Featured Post</p>
+                <h2 class="post-title">Welcome to the Retro Blog</h2>
+                <div class="post-meta">Posted on October 1, 2025</div>
+                <div class="post-content">
+                    <p>Welcome to this minimalist retro-style blog! This page uses NES.css for that classic 8-bit aesthetic, complete with an ocean background made from retro tiles.</p>
+                    
+                    <p>The background changes color based on the time of day - watch as the sun rises and sets in real-time!</p>
+                    
+                    <p>You can write regular text, and also include mathematical formulas using LaTeX notation!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Physics Section -->
+        <div class="content-section" id="physics">
+            <div class="header nes-container is-rounded with-title">
+                <p class="title">Category</p>
+                <h1>Physics</h1>
+                <p>Exploring the beauty of the physical world</p>
+            </div>
+
+            <div class="article-nav nes-container is-rounded">
+                <h3>Articles in this category:</h3>
+                <ul class="nes-list is-disc" id="physics-list"></ul>
+            </div>
+            <!-- Physics posts will be loaded here -->
+        </div>
+
+        <!-- Building Section -->
+        <div class="content-section" id="building">
+            <div class="header nes-container is-rounded with-title">
+                <p class="title">Category</p>
+                <h1>Building</h1>
+                <p>Projects, making, and design</p>
+            </div>
+
+            <div class="article-nav nes-container is-rounded">
+                <h3>Articles in this category:</h3>
+                <ul class="nes-list is-disc" id="building-list"></ul>
+            </div>
+            <!-- Building posts will be loaded here -->
+        </div>
+
+        <!-- Philosophy Section -->
+        <div class="content-section" id="philosophy">
+            <div class="header nes-container is-rounded with-title">
+                <p class="title">Category</p>
+                <h1>Philosophy</h1>
+                <p>Ideas, reasoning, and thought</p>
+            </div>
+
+            <div class="article-nav nes-container is-rounded">
+                <h3>Articles in this category:</h3>
+                <ul class="nes-list is-disc" id="philosophy-list"></ul>
+            </div>
+            <!-- Philosophy posts will be loaded here -->
+        </div>
+
+        <!-- Music Section -->
+        <div class="content-section" id="music">
+            <div class="header nes-container is-rounded with-title">
+                <p class="title">Category</p>
+                <h1>Music</h1>
+                <p>Sound, rhythm, and creativity</p>
+            </div>
+
+            <div class="article-nav nes-container is-rounded">
+                <h3>Articles in this category:</h3>
+                <ul class="nes-list is-disc" id="music-list"></ul>
+            </div>
+            <!-- Music posts will be loaded here -->
+        </div>
+
+        <!-- About Section -->
+        <div class="content-section" id="about">
+            <div class="header nes-container is-rounded with-title">
+                <p class="title">Info</p>
+                <h1>About This Blog</h1>
+                <p>A retro-styled blog with modern features</p>
+            </div>
+
+            <div class="post nes-container is-rounded with-title">
+                <p class="title">About</p>
+                <h2 class="post-title">Features</h2>
+                <div class="post-content">
+                    <p>This blog combines retro aesthetics with modern web technologies:</p>
+                    <p>• Dynamic day/night cycle based on real time</p>
+                    <p>• LaTeX formula support with KaTeX</p>
+                    <p>• NES.css styling framework</p>
+                    <p>• Pixel-perfect water tile backgrounds</p>
+                    <p>• Responsive design</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer nes-container is-rounded">
+            <p>© 2025 Retro Ocean Blog | Made with NES.css & KaTeX</p>
+        </div>
+    </div>
+
+    <!-- Ocean Background Script -->
+    <script>
+        // Cache the sprite sheet and static water pattern
+        let spriteSheetCache = null;
+        let isLoadingSpriteSheet = false;
+        let staticWaterCanvas = null;
+        
+        // Create tiled ocean background from sprite sheet
+        function createOceanBackground(forceRedraw = false) {
+            const canvas = document.getElementById('ocean-background');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas to full window size
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            // Disable image smoothing for crisp pixels
+            ctx.imageSmoothingEnabled = false;
+            
+            function drawBackground() {
+                const tileSize = 16; // Original tile size in sprite sheet
+                const scaledTileSize = 64; // 4x bigger tiles
+                
+                // Water tiles from columns 8-9, row 1
+                const waterTiles = [
+                    { x: 112, y: 0 },  // Column 8, Row 1
+                    { x: 128, y: 0 },  // Column 9, Row 1
+                ];
+                
+                // Calculate how many tiles we need
+                const tilesX = Math.ceil(canvas.width / scaledTileSize) + 1;
+                const tilesY = Math.ceil(canvas.height / scaledTileSize) + 1;
+                
+                // Always use static water pattern (no tile changes)
+                if (staticWaterCanvas) {
+                    ctx.drawImage(staticWaterCanvas, 0, 0);
+                } else {
+                    // Draw tiled water background once
+                    for (let y = 0; y < tilesY; y++) {
+                        for (let x = 0; x < tilesX; x++) {
+                            // Use first tile consistently
+                            const tile = waterTiles[0];
+                            
+                            ctx.drawImage(
+                                spriteSheetCache,
+                                tile.x, tile.y, tileSize, tileSize,
+                                x * scaledTileSize, y * scaledTileSize, scaledTileSize, scaledTileSize
+                            );
+                        }
+                    }
+                    
+                    // Cache this pattern permanently
+                    if (!staticWaterCanvas) {
+                        staticWaterCanvas = document.createElement('canvas');
+                        staticWaterCanvas.width = canvas.width;
+                        staticWaterCanvas.height = canvas.height;
+                        const staticCtx = staticWaterCanvas.getContext('2d');
+                        staticCtx.drawImage(canvas, 0, 0);
+                    }
+                }
+                
+                // Apply time-based gradient overlay
+                applyTimeGradient(ctx, canvas.width, canvas.height);
+            }
+            
+            // Use cached sprite sheet if available
+            if (spriteSheetCache && spriteSheetCache.complete) {
+                drawBackground();
+            } else if (!isLoadingSpriteSheet) {
+                isLoadingSpriteSheet = true;
+                const spriteSheet = new Image();
+                spriteSheet.src = 'Water+.png';
+                
+                spriteSheet.onload = function() {
+                    spriteSheetCache = spriteSheet;
+                    isLoadingSpriteSheet = false;
+                    drawBackground();
+                };
+            }
+        }
+
+        // Time-based gradient system
+        let demoMode = false;
+        let sunsetMode = false;
+        let demoStartTime = null;
+        let sunsetStartTime = null; // ms timestamp when sunset mode was enabled
+        let sunsetBaseHour = null;  // fractional hour at the moment sunset mode starts
+        let demoInterval = null;
+
+        function getTimeOfDay() {
+            if (sunsetMode) {
+                // 4x real-time speed starting from fixed sunset time baseline
+                const elapsedMs = Date.now() - sunsetStartTime;
+                const elapsedHours = (elapsedMs / 3600000) * 4; // 1s sim per 0.25s real
+                return (sunsetBaseHour + elapsedHours) % 24;
+            } else if (demoMode) {
+                const elapsed = (Date.now() - demoStartTime) / 1000; // seconds elapsed
+                const progress = (elapsed % 7.5) / 7.5; // 0 to 1 over 7.5 seconds
+                return progress * 24; // 0 to 24 hours
+            } else {
+                const now = new Date();
+                return now.getHours() + now.getMinutes() / 60;
+            }
+        }
+
+        function lerp(a, b, t) {
+            return a + (b - a) * t;
+        }
+
+        function smoothstep(t) {
+            // Smoother easing function (smootherstep)
+            return t * t * t * (t * (t * 6 - 15) + 10);
+        }
+
+        function applyTimeGradient(ctx, width, height) {
+            const hour = getTimeOfDay();
+            const gradient = ctx.createLinearGradient(0, 0, 0, height);
+            
+            // Define color stops with extended sunrise/sunset periods
+            const timeColors = [
+                // Night (0h)
+                { hour: 0, top: [20, 20, 60, 0.5], mid: [30, 30, 80, 0.45], bot: [10, 10, 40, 0.55] },
+                // Late night (3h)
+                { hour: 3, top: [15, 15, 50, 0.52], mid: [25, 25, 70, 0.47], bot: [8, 8, 35, 0.57] },
+                // Pre-dawn (4.5h) - start of sunrise
+                { hour: 4.5, top: [50, 30, 80, 0.48], mid: [70, 50, 90, 0.43], bot: [40, 20, 60, 0.52] },
+                // Dawn (5.5h) - deep purple/pink
+                { hour: 5.5, top: [120, 60, 100, 0.42], mid: [140, 80, 110, 0.38], bot: [80, 40, 80, 0.46] },
+                // Sunrise peak (6.5h) - vibrant orange/pink
+                { hour: 6.5, top: [255, 140, 80, 0.32], mid: [255, 160, 100, 0.28], bot: [200, 100, 70, 0.38] },
+                // Post-sunrise (7.5h) - golden morning
+                { hour: 7.5, top: [255, 200, 120, 0.25], mid: [255, 210, 140, 0.2], bot: [220, 170, 110, 0.3] },
+                // Morning (9h)
+                { hour: 9, top: [255, 230, 160, 0.18], mid: [255, 240, 180, 0.15], bot: [230, 200, 150, 0.22] },
+                // Day (12h)
+                { hour: 12, top: [255, 255, 200, 0.12], mid: [255, 255, 220, 0.08], bot: [200, 200, 255, 0.12] },
+                // Afternoon (15h)
+                { hour: 15, top: [255, 245, 190, 0.15], mid: [255, 250, 210, 0.12], bot: [220, 220, 250, 0.15] },
+                // Pre-golden hour (16.5h)
+                { hour: 16.5, top: [255, 220, 140, 0.22], mid: [255, 210, 150, 0.2], bot: [230, 180, 130, 0.26] },
+                // Golden hour (17.5h) - warm glow
+                { hour: 17.5, top: [255, 180, 100, 0.28], mid: [255, 170, 110, 0.26], bot: [240, 140, 90, 0.32] },
+                // Sunset start (18.5h) - deep orange
+                { hour: 18.5, top: [255, 130, 60, 0.35], mid: [250, 120, 80, 0.32], bot: [200, 90, 70, 0.4] },
+                // Sunset peak (19.5h) - orange to purple
+                { hour: 19.5, top: [200, 100, 120, 0.4], mid: [220, 110, 130, 0.36], bot: [140, 70, 110, 0.44] },
+                // Dusk (20.5h) - purple twilight
+                { hour: 20.5, top: [100, 70, 130, 0.45], mid: [120, 80, 140, 0.4], bot: [70, 50, 110, 0.48] },
+                // Evening (22h)
+                { hour: 22, top: [40, 30, 70, 0.48], mid: [50, 40, 85, 0.43], bot: [25, 20, 55, 0.52] },
+                // Night (24h - wraps to 0)
+                { hour: 24, top: [20, 20, 60, 0.5], mid: [30, 30, 80, 0.45], bot: [10, 10, 40, 0.55] }
+            ];
+            
+            // Find the two time periods to interpolate between
+            let prevTime = timeColors[0];
+            let nextTime = timeColors[1];
+            
+            for (let i = 0; i < timeColors.length - 1; i++) {
+                if (hour >= timeColors[i].hour && hour < timeColors[i + 1].hour) {
+                    prevTime = timeColors[i];
+                    nextTime = timeColors[i + 1];
+                    break;
+                }
+            }
+            
+            // Interpolation factor; demo uses linear to ensure linear fading
+            const t = (hour - prevTime.hour) / (nextTime.hour - prevTime.hour);
+            const factor = demoMode ? t : smoothstep(t);
+            
+            // Interpolate colors
+            const topR = lerp(prevTime.top[0], nextTime.top[0], factor);
+            const topG = lerp(prevTime.top[1], nextTime.top[1], factor);
+            const topB = lerp(prevTime.top[2], nextTime.top[2], factor);
+            const topA = lerp(prevTime.top[3], nextTime.top[3], factor);
+            
+            const midR = lerp(prevTime.mid[0], nextTime.mid[0], factor);
+            const midG = lerp(prevTime.mid[1], nextTime.mid[1], factor);
+            const midB = lerp(prevTime.mid[2], nextTime.mid[2], factor);
+            const midA = lerp(prevTime.mid[3], nextTime.mid[3], factor);
+            
+            const botR = lerp(prevTime.bot[0], nextTime.bot[0], factor);
+            const botG = lerp(prevTime.bot[1], nextTime.bot[1], factor);
+            const botB = lerp(prevTime.bot[2], nextTime.bot[2], factor);
+            const botA = lerp(prevTime.bot[3], nextTime.bot[3], factor);
+            
+            // Add spatial shading effect for sunset mode
+            if (sunsetMode) {
+                // Create radial gradient for sunset spatial effect
+                const radialGradient = ctx.createRadialGradient(
+                    width * 0.3, height * 0.3, 0,  // Center-left, slightly up
+                    width * 0.5, height * 0.5, width * 0.8
+                );
+                
+                // Warm glow from "sun" position
+                radialGradient.addColorStop(0, `rgba(255, 180, 100, 0.4)`);
+                radialGradient.addColorStop(0.3, `rgba(255, 140, 80, 0.3)`);
+                radialGradient.addColorStop(0.6, `rgba(200, 100, 120, 0.2)`);
+                radialGradient.addColorStop(1, `rgba(100, 70, 130, 0.1)`);
+                
+                // Apply base gradient
+                gradient.addColorStop(0, `rgba(${topR}, ${topG}, ${topB}, ${topA})`);
+                gradient.addColorStop(0.5, `rgba(${midR}, ${midG}, ${midB}, ${midA})`);
+                gradient.addColorStop(1, `rgba(${botR}, ${botG}, ${botB}, ${botA})`);
+                
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, width, height);
+                
+                // Overlay radial gradient for spatial effect
+                ctx.fillStyle = radialGradient;
+                ctx.fillRect(0, 0, width, height);
+            } else {
+                gradient.addColorStop(0, `rgba(${topR}, ${topG}, ${topB}, ${topA})`);
+                gradient.addColorStop(0.5, `rgba(${midR}, ${midG}, ${midB}, ${midA})`);
+                gradient.addColorStop(1, `rgba(${botR}, ${botG}, ${botB}, ${botA})`);
+                
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, width, height);
+            }
+        }
+
+        function updateTimeDisplay() {
+            const hour = getTimeOfDay();
+            const displayHour = Math.floor(hour);
+            const displayMinute = Math.floor((hour % 1) * 60);
+            if (sunsetMode) {
+                const totalSeconds = Math.floor(hour * 3600);
+                const seconds = totalSeconds % 60;
+                document.getElementById('time-display').textContent =
+                    `${displayHour.toString().padStart(2, '0')}:${displayMinute.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            } else {
+                document.getElementById('time-display').textContent =
+                    `${displayHour.toString().padStart(2, '0')}:${displayMinute.toString().padStart(2, '0')}`;
+            }
+        }
+
+        function redrawBackground() {
+            createOceanBackground();
+            updateTimeDisplay();
+        }
+
+        // Demo badge functionality
+        document.getElementById('demo-badge').addEventListener('click', function(e) {
+            e.preventDefault();
+            sunsetMode = false; // Disable sunset mode
+            if (demoMode) {
+                // Stop demo
+                demoMode = false;
+                clearInterval(demoInterval);
+                this.innerHTML = '<span class="is-dark">Demo: OFF</span>';
+                redrawBackground();
+            } else {
+                // Start demo
+                demoMode = true;
+                demoStartTime = Date.now();
+                this.innerHTML = '<span class="is-error">Demo: ON</span>';
+                
+                // Update every 20ms for very smooth transitions
+                demoInterval = setInterval(redrawBackground, 20);
+            }
+        });
+
+        // Sunset badge functionality
+        document.getElementById('sunset-badge').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (demoMode) {
+                demoMode = false;
+                clearInterval(demoInterval);
+                document.getElementById('demo-badge').innerHTML = '<span class="is-dark">Demo: OFF</span>';
+            }
+            sunsetMode = !sunsetMode;
+            if (sunsetMode) {
+                // Start from fixed sunset baseline (18:30)
+                sunsetBaseHour = 18.5; // 18:30
+                sunsetStartTime = Date.now();
+                // Update every 250ms (1 simulated second per 0.25 real second)
+                demoInterval = setInterval(redrawBackground, 250);
+            } else {
+                clearInterval(demoInterval);
+            }
+            redrawBackground();
+        });
+
+        // Reset badge functionality
+        document.getElementById('reset-badge').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (demoMode) {
+                demoMode = false;
+                clearInterval(demoInterval);
+                document.getElementById('demo-badge').innerHTML = '<span class="is-dark">Demo: OFF</span>';
+            }
+            sunsetMode = false;
+            if (demoInterval) {
+                clearInterval(demoInterval);
+            }
+            redrawBackground();
+        });
+
+        // Navigation functionality
+        document.querySelectorAll('.nav a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const section = this.getAttribute('data-section');
+                
+                // Hide all sections
+                document.querySelectorAll('.content-section').forEach(s => {
+                    s.classList.remove('active');
+                });
+                
+                // Show selected section
+                document.getElementById(section).classList.add('active');
+                
+                // Re-render math if needed
+                if (typeof renderMathInElement !== 'undefined') {
+                    renderMathInElement(document.body, {
+                        delimiters: [
+                            {left: '$$', right: '$$', display: true},
+                            {left: '\\[', right: '\\]', display: true},
+                            {left: '$', right: '$', display: false},
+                            {left: '\\(', right: '\\)', display: false}
+                        ],
+                        throwOnError: false
+                    });
+                }
+            });
+        });
+
+        // Set Featured Post to newest by data-date
+        function updateFeaturedPost() {
+            const posts = Array.from(document.querySelectorAll('.post[data-date]'));
+            if (posts.length === 0) return;
+            posts.sort((a, b) => new Date(b.getAttribute('data-date')) - new Date(a.getAttribute('data-date')));
+            const newest = posts[0];
+
+            const featured = document.getElementById('featured-post');
+            if (!featured) return;
+
+            const titleEl = featured.querySelector('.post-title');
+            const metaEl = featured.querySelector('.post-meta');
+            const contentEl = featured.querySelector('.post-content');
+
+            const newTitle = newest.querySelector('.post-title')?.textContent || 'Latest Post';
+            const newMeta = newest.querySelector('.post-meta')?.textContent || '';
+            const newContent = newest.querySelector('.post-content')?.innerHTML || '';
+
+            if (titleEl) titleEl.textContent = newTitle;
+            if (metaEl) metaEl.textContent = newMeta;
+            if (contentEl) contentEl.innerHTML = newContent;
+
+            // Re-render math if KaTeX is available
+            if (typeof renderMathInElement !== 'undefined') {
+                renderMathInElement(featured, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '\\[', right: '\\]', display: true},
+                        {left: '$', right: '$', display: false},
+                        {left: '\\(', right: '\\)', display: false}
+                    ],
+                    throwOnError: false
+                });
+            }
+        }
+
+        // Dynamic post loader
+        async function loadPosts() {
+            try {
+                // If opened via file://, fetch will likely fail
+                if (location.protocol === 'file:') {
+                    const hint = document.createElement('div');
+                    hint.className = 'nes-container is-rounded';
+                    hint.style.margin = '10px 0';
+                    hint.innerHTML = '<p><strong>Note:</strong> Posts are loaded dynamically. Please serve this site over HTTP (e.g., GitHub Pages/Netlify or a local server) to see articles.</p>';
+                    const home = document.getElementById('home');
+                    if (home) home.appendChild(hint);
+                }
+                const res = await fetch('posts/index.json');
+                if (!res.ok) return;
+                const postsIndex = await res.json();
+
+                // Map category -> section id and list id
+                const catMap = {
+                    physics: { section: document.getElementById('physics'), list: document.getElementById('physics-list') },
+                    building: { section: document.getElementById('building'), list: document.getElementById('building-list') },
+                    philosophy: { section: document.getElementById('philosophy'), list: document.getElementById('philosophy-list') },
+                    music: { section: document.getElementById('music'), list: document.getElementById('music-list') },
+                };
+
+                // Load all fragments
+                await Promise.all(postsIndex.map(async (p) => {
+                    const sec = catMap[p.category]?.section;
+                    if (!sec) return;
+                    const resp = await fetch(p.path);
+                    if (!resp.ok) {
+                        console.error('Failed to fetch post fragment:', p.path);
+                        return;
+                    }
+                    const html = await resp.text();
+                    // Inject post after its category's article-nav
+                    const nav = sec.querySelector('.article-nav');
+                    if (nav) {
+                        nav.insertAdjacentHTML('afterend', html);
+                    } else {
+                        sec.insertAdjacentHTML('beforeend', html);
+                    }
+                }));
+
+                // Rebuild article chooser lists
+                Object.entries(catMap).forEach(([cat, refs]) => {
+                    const { section, list } = refs;
+                    if (!section || !list) return;
+                    list.innerHTML = '';
+                    const posts = section.querySelectorAll('.post[data-date]');
+                    posts.forEach(post => {
+                        const id = post.id || '';
+                        const title = post.querySelector('.post-title')?.textContent || id;
+                        const li = document.createElement('li');
+                        const a = document.createElement('a');
+                        a.href = `#${id}`;
+                        a.textContent = title;
+                        li.appendChild(a);
+                        list.appendChild(li);
+                    });
+                });
+
+                // Re-render math on loaded posts
+                if (typeof renderMathInElement !== 'undefined') {
+                    document.querySelectorAll('.post').forEach(el => {
+                        renderMathInElement(el, {
+                            delimiters: [
+                                {left: '$$', right: '$$', display: true},
+                                {left: '\\[', right: '\\]', display: true},
+                                {left: '$', right: '$', display: false},
+                                {left: '\\(', right: '\\)', display: false}
+                            ],
+                            throwOnError: false
+                        });
+                    });
+                }
+
+                // Update featured after posts load
+                updateFeaturedPost();
+            } catch (e) {
+                console.error('Error loading posts:', e);
+            }
+        }
+
+        // Initialize features
+        loadPosts().finally(() => {
+            // Background and time after content
+            createOceanBackground();
+            updateTimeDisplay();
+        });
+        
+        // Update gradient every minute in real-time mode
+        setInterval(function() {
+            if (!demoMode) {
+                redrawBackground();
+            }
+        }, 60000);
+        
+        // Redraw on window resize
+        window.addEventListener('resize', createOceanBackground);
+    </script>
+
+    <!-- Initialize KaTeX auto-render -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '\\[', right: '\\]', display: true},
+                    {left: '$', right: '$', display: false},
+                    {left: '\\(', right: '\\)', display: false}
+                ],
+                throwOnError: false
+            });
+        });
+    </script>
+    <!-- Home button laggy screen transition & navigation -->
+    <script>
+        (function(){
+            const btn = document.getElementById('homeButton');
+            if (!btn) return;
+
+            function startLaggy(onComplete, duration = 1100) {
+                // Inject styles once
+                if (!document.getElementById('laggy-style')) {
+                    const style = document.createElement('style');
+                    style.id = 'laggy-style';
+                    style.textContent = `
+                        .lag-overlay { position: fixed; inset: 0; z-index: 10000; pointer-events:none; background: rgba(0,0,0,0); }
+                        .lag-overlay:before { content:''; position:absolute; inset:0; background: repeating-linear-gradient( to bottom, rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 2px, rgba(0,0,0,0) 3px, rgba(0,0,0,0) 6px ); mix-blend-mode: screen; opacity:0.7; }
+                        @keyframes lag-flicker { 0%,100%{opacity:0.15;} 5%{opacity:0.8;} 10%{opacity:0.2;} 25%{opacity:0.65;} 40%{opacity:0.1;} 60%{opacity:0.7;} 80%{opacity:0.2;} }
+                        @keyframes lag-shift { 0%{transform: translate(0,0) skewX(0deg);} 20%{transform: translate(-2px,1px) skewX(1deg);} 40%{transform: translate(3px,-1px) skewX(-1.2deg);} 60%{transform: translate(-1px,2px) skewX(0.8deg);} 80%{transform: translate(2px,0) skewX(-0.6deg);} 100%{transform: translate(0,0) skewX(0deg);} }
+                    `;
+                    document.head.appendChild(style);
+                }
+
+                const overlay = document.createElement('div');
+                overlay.className = 'lag-overlay';
+                overlay.style.animation = `lag-flicker ${duration}ms steps(20,end) both`;
+                document.body.appendChild(overlay);
+
+                const container = document.querySelector('.container');
+                if (container) {
+                    container.style.willChange = 'transform, filter';
+                    container.style.transition = `filter ${duration}ms ease`;
+                    container.style.animation = `lag-shift ${Math.max(600, duration - 300)}ms steps(10,end) infinite`;
+                    // Force reflow
+                    void container.offsetHeight;
+                    container.style.filter = 'contrast(1.2) saturate(1.1)';
+                }
+
+                // Occasional hard flickers
+                const flicker = setInterval(() => {
+                    overlay.style.background = Math.random() > 0.6 ? 'rgba(0,0,0,0.25)' : 'rgba(0,0,0,0)';
+                }, 80);
+
+                setTimeout(() => {
+                    clearInterval(flicker);
+                    if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+                    if (container) {
+                        container.style.animation = '';
+                        container.style.filter = '';
+                        container.style.transition = '';
+                        container.style.willChange = '';
+                    }
+                    onComplete && onComplete();
+                }, duration);
+            }
+
+            btn.addEventListener('click', function(e){
+                e.preventDefault();
+                btn.disabled = true;
+                startLaggy(() => {
+                    window.location.href = '../index.html';
+                });
+            });
+        })();
+    </script>
+</body>
+</html>
