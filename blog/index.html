@@ -110,9 +110,7 @@
             display: inline-block;
         }
         /* Ensure consistent space below image boxes */
-        .image-frame {
-            margin-bottom: 30px;
-        }
+
         .image-frame img {
             max-width: 100%;
             height: auto;
@@ -162,15 +160,24 @@
 
         .time-controls {
             display: flex;
-            gap: 10px;
+            gap: 14px; /* consistent spacing */
             margin-top: 20px;
             margin-bottom: 10px;
             flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            transform: scale(0.9); /* scale down within the 1.2x page scale */
+            transform-origin: top center;
+            will-change: transform;
         }
 
         .time-controls .nes-badge {
-            /* cursor handled by NES.css for anchors to show retro pointer */
-            user-select: none;
+            /* Normalize badges for consistent alignment */
+            user-select: none; /* cursor handled by NES.css for anchors to show retro pointer */
+            margin: 0; /* remove any default margins */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .time-controls .nes-badge:hover {
@@ -179,6 +186,17 @@
 
         /* Removed explicit cursor to allow NES.css retro cursor */
         /* (no extra rules needed) */
+
+        /* Make the inner pill consistent size and spacing */
+        .time-controls .nes-badge span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 10px; /* scaled down */
+            line-height: 1; /* avoid extra vertical jitter */
+            min-height: 28px; /* slightly smaller height */
+            font-size: 0.83em; /* counteract 1.2x container scale */
+        }
 
         .article-nav {
             background-color: #f9f9f9;
@@ -833,65 +851,29 @@
             });
         });
     </script>
-    <!-- Home button laggy screen transition & navigation -->
+    <!-- Home button smooth fade navigation -->
     <script>
         (function(){
             const btn = document.getElementById('homeButton');
             if (!btn) return;
 
-            function startLaggy(onComplete, duration = 1100) {
-                // Inject styles once
-                if (!document.getElementById('laggy-style')) {
-                    const style = document.createElement('style');
-                    style.id = 'laggy-style';
-                    style.textContent = `
-                        .lag-overlay { position: fixed; inset: 0; z-index: 10000; pointer-events:none; background: rgba(0,0,0,0); }
-                        .lag-overlay:before { content:''; position:absolute; inset:0; background: repeating-linear-gradient( to bottom, rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 2px, rgba(0,0,0,0) 3px, rgba(0,0,0,0) 6px ); mix-blend-mode: screen; opacity:0.7; }
-                        @keyframes lag-flicker { 0%,100%{opacity:0.15;} 5%{opacity:0.8;} 10%{opacity:0.2;} 25%{opacity:0.65;} 40%{opacity:0.1;} 60%{opacity:0.7;} 80%{opacity:0.2;} }
-                        @keyframes lag-shift { 0%{transform: translate(0,0) skewX(0deg);} 20%{transform: translate(-2px,1px) skewX(1deg);} 40%{transform: translate(3px,-1px) skewX(-1.2deg);} 60%{transform: translate(-1px,2px) skewX(0.8deg);} 80%{transform: translate(2px,0) skewX(-0.6deg);} 100%{transform: translate(0,0) skewX(0deg);} }
-                    `;
-                    document.head.appendChild(style);
-                }
-
-                const overlay = document.createElement('div');
-                overlay.className = 'lag-overlay';
-                overlay.style.animation = `lag-flicker ${duration}ms steps(20,end) both`;
-                document.body.appendChild(overlay);
-
-                const container = document.querySelector('.container');
-                if (container) {
-                    container.style.willChange = 'transform, filter';
-                    container.style.transition = `filter ${duration}ms ease`;
-                    container.style.animation = `lag-shift ${Math.max(600, duration - 300)}ms steps(10,end) infinite`;
-                    // Force reflow
-                    void container.offsetHeight;
-                    container.style.filter = 'contrast(1.2) saturate(1.1)';
-                }
-
-                // Occasional hard flickers
-                const flicker = setInterval(() => {
-                    overlay.style.background = Math.random() > 0.6 ? 'rgba(0,0,0,0.25)' : 'rgba(0,0,0,0)';
-                }, 80);
-
-                setTimeout(() => {
-                    clearInterval(flicker);
-                    if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-                    if (container) {
-                        container.style.animation = '';
-                        container.style.filter = '';
-                        container.style.transition = '';
-                        container.style.willChange = '';
-                    }
-                    onComplete && onComplete();
-                }, duration);
-            }
-
-            btn.addEventListener('click', function(e){
+            let navigating = false;
+            btn.addEventListener('click', (e) => {
                 e.preventDefault();
+                if (navigating) return;
+                navigating = true;
                 btn.disabled = true;
-                startLaggy(() => {
+
+                // Smooth fade of the main content only
+                const container = document.querySelector('.container');
+                const duration = 250;
+                if (container) {
+                    container.style.transition = `opacity ${duration}ms ease`;
+                    container.style.opacity = '0';
+                }
+                setTimeout(() => {
                     window.location.href = '../index.html';
-                });
+                }, duration);
             });
         })();
     </script>
