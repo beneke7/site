@@ -222,18 +222,18 @@ class RetroFutureWebsite {
             {
                 name: 'earth',
                 src: 'earth.gif',
-                size: '120px',
-                top: '15%',
-                left: '10%',
+                size: '110px',
+                top: '10%',
+                left: '22%',
                 opacity: '0.8'
             },
             {
                 name: 'exoplanet',
-                src: 'exoplanet.gif',
-                size: '100px',
-                top: '60%',
-                left: '5%',
-                opacity: '0.7'
+                src: 'bigplanet.gif',
+                size: '1000px',
+                bottom: '-500px',
+                left: '-300px',
+                opacity: '0.85'
             },
             {
                 name: 'black-hole',
@@ -254,17 +254,17 @@ class RetroFutureWebsite {
             {
                 name: 'gas-giant-2',
                 src: 'gasgiant2.gif',
-                size: '110px',
-                top: '25%',
-                left: '25%',
+                size: '120px',
+                top: '18%',
+                right: '15%',
                 opacity: '0.7'
             },
             {
                 name: 'asteroids',
                 src: 'asteroids.png',
-                size: '80px',
-                top: '80%',
-                left: '30%',
+                size: '90px',
+                top: '78%',
+                left: '55%',
                 opacity: '0.6'
             }
         ];
@@ -291,19 +291,19 @@ class RetroFutureWebsite {
             if (obj.right) element.style.right = obj.right;
             
             // Add hover effects for interactivity
-            element.style.pointerEvents = 'auto';
-            element.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
-            element.style.cursor = 'pointer';
-            
-            element.addEventListener('mouseenter', () => {
-                element.style.transform = 'scale(1.1)';
-                element.style.opacity = '1';
-            });
-            
-            element.addEventListener('mouseleave', () => {
-                element.style.transform = 'scale(1)';
-                element.style.opacity = obj.opacity;
-            });
+            if (obj.name !== 'exoplanet') {
+                element.style.pointerEvents = 'auto';
+                element.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+                element.style.cursor = 'pointer';
+                element.addEventListener('mouseenter', () => {
+                    element.style.transform = 'scale(1.1)';
+                    element.style.opacity = '1';
+                });
+                element.addEventListener('mouseleave', () => {
+                    element.style.transform = 'scale(1)';
+                    element.style.opacity = obj.opacity;
+                });
+            }
             
             spaceBackground.appendChild(element);
         });
