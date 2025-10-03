@@ -51,6 +51,8 @@
 
         /* Scaled inner wrapper keeps outer container centered */
         .content-scale {
+            width: calc(100% / 1.2);
+            margin: 0 auto;
             transform: scale(1.2);
             transform-origin: top center;
         }
@@ -238,6 +240,7 @@
     <button id="homeButton" class="nes-btn is-warning" style="position: fixed; top: 16px; right: 16px; z-index: 10000;">HOME</button>
     <canvas id="ocean-background"></canvas>
     <div class="container">
+        <div class="content-scale">
         <!-- Navigation -->
         <div class="nav nes-container is-rounded">
             <a href="#" data-section="home">Home</a>
@@ -344,6 +347,7 @@
         <!-- Footer -->
         <div class="footer nes-container is-rounded">
             <p>© 2025 Retro Ocean Blog | Made with NES.css & KaTeX</p>
+        </div>
         </div>
     </div>
 
