@@ -700,6 +700,14 @@
                     throwOnError: false
                 });
             }
+        }
+
+        // Dynamic post loader
+        async function loadPosts() {
+            try {
+                // If opened via file://, fetch will likely fail
+                if (location.protocol === 'file:') {
+                    const hint = document.createElement('div');
                     hint.className = 'nes-container is-rounded';
                     hint.style.margin = '10px 0';
                     hint.innerHTML = '<p><strong>Note:</strong> Posts are loaded dynamically. Please serve this site over HTTP (e.g., GitHub Pages/Netlify or a local server) to see articles.</p>';
@@ -770,11 +778,6 @@
                     });
                 }
 
-                // Convert Markdown-style links [text](url) in post bodies
-                if (typeof convertMarkdownLinks === 'function') {
-                    convertMarkdownLinks();
-                }
-
                 // Update featured after posts load
                 updateFeaturedPost();
             } catch (e) {
@@ -802,16 +805,6 @@
 
     <!-- Initialize KaTeX auto-render -->
     <script>
-        // Convert [Text](https://url) syntax inside .post-content elements into anchor tags
-        function convertMarkdownLinks() {
-            document.querySelectorAll('.post-content').forEach(container => {
-                const replaced = container.innerHTML.replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1<\/a>');
-                if (replaced !== container.innerHTML) {
-                    container.innerHTML = replaced;
-                }
-            });
-        }
-
         document.addEventListener("DOMContentLoaded", function() {
             renderMathInElement(document.body, {
                 delimiters: [
