@@ -1,72 +1,9 @@
 [
   {
-    "id": "math-article-1",
-    "title": "Mathematics in the Digital Age",
-    "date": "2025-09-28",
-    "category": "physics",
-    "path": "posts/physics/math-article-1.html"
-  },
-  {
-    "id": "math-article-2",
-    "title": "The Beauty of Euler's Formula",
-    "date": "2025-09-20",
-    "category": "physics",
-    "path": "posts/physics/math-article-2.html"
-  },
-  {
-    "id": "math-article-3",
-    "title": "Calculus and Computing",
-    "date": "2025-09-10",
-    "category": "physics",
-    "path": "posts/physics/math-article-3.html"
-  },
-  {
-    "id": "prog-article-1",
-    "title": "Building Retro Interfaces",
-    "date": "2025-09-25",
-    "category": "building",
-    "path": "posts/building/prog-article-1.html"
-  },
-  {
-    "id": "prog-article-2",
-    "title": "Canvas API Techniques",
-    "date": "2025-09-15",
-    "category": "building",
-    "path": "posts/building/prog-article-2.html"
-  },
-  {
     "id": "prog-article-3",
-    "title": "Example Post: Images, Formulas, and NES Lists",
+    "title": "Vibecoding my nintendo style portfolio page",
     "date": "2025-10-03",
     "category": "building",
     "path": "posts/building/prog-article-3.html"
-  },
-  {
-    "id": "game-article-1",
-    "title": "The Art of Pixel Graphics",
-    "date": "2025-09-20",
-    "category": "philosophy",
-    "path": "posts/philosophy/game-article-1.html"
-  },
-  {
-    "id": "game-article-2",
-    "title": "Classic Game Design Patterns",
-    "date": "2025-09-05",
-    "category": "philosophy",
-    "path": "posts/philosophy/game-article-2.html"
-  },
-  {
-    "id": "design-article-1",
-    "title": "NES.css Framework",
-    "date": "2025-09-15",
-    "category": "building",
-    "path": "posts/building/design-article-1.html"
-  },
-  {
-    "id": "design-article-2",
-    "title": "Retro Typography on the Web",
-    "date": "2025-08-30",
-    "category": "building",
-    "path": "posts/building/design-article-2.html"
   }
 ]
