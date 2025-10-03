@@ -17,6 +17,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
     
     <style>
+        :root { --ui-scale: 1.2; }
         * {
             margin: 0;
             padding: 0;
@@ -44,7 +45,14 @@
 
         .container {
             max-width: 900px;
+            width: 100%;
             margin: 0 auto;
+        }
+
+        /* Scaled inner wrapper keeps outer container centered */
+        .content-scale {
+            transform: scale(1.2);
+            transform-origin: top center;
         }
 
         .nav {
